@@ -134,10 +134,14 @@ public:
     
     virtual int32_t update() {
         if (!GameOn) {
+            if (WaitingUntilOutput) {
+                model->setState(PixelOverlayState(PixelOverlayState::PixelState::Disabled));
+                return 0;
+            }
             model->clearOverlayBuffer();
             model->flushOverlayBuffer();
-            model->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
-            return 0;
+            WaitingUntilOutput = true;
+            return -1;
         }
         moveSnake();
         CopyToModel();
@@ -177,6 +181,7 @@ public:
     int cols = 20;
     
     bool GameOn = true;
+    bool WaitingUntilOutput = false;
     long long timer = 100;
 };
 
@@ -192,7 +197,6 @@ void FPPSnake::button(const std::string &button) {
             }
             int pixelScaling = std::stoi(findOption("Pixel Scaling", "1"));
             effect = new SnakeEffect(pixelScaling, m);
-            effect->button(button);
             m->setRunningEffect(effect, 50);
         } else {
             effect->button(button);

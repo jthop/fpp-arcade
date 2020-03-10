@@ -60,8 +60,13 @@ public:
         if (!GameOn) {
             model->clearOverlayBuffer();
             model->flushOverlayBuffer();
-            model->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
-            return 0;
+            
+            if (WaitingUntilOutput) {
+                model->setState(PixelOverlayState(PixelOverlayState::PixelState::Disabled));
+                return 0;
+            }
+            WaitingUntilOutput = true;
+            return -1;
         }
         if (p1Score >= 5 || p2Score >= 5) {
             GameOn = false;
@@ -195,6 +200,7 @@ public:
 
     
     bool GameOn = true;
+    bool WaitingUntilOutput = false;
     
     long long timer = 50;
 

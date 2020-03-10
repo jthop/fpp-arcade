@@ -283,8 +283,13 @@ public:
             }
             model->clearOverlayBuffer();
             model->flushOverlayBuffer();
-            model->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
-            return 0;
+            
+            if (WaitingUntilOutput) {
+                model->setState(PixelOverlayState(PixelOverlayState::PixelState::Disabled));
+                return 0;
+            }
+            WaitingUntilOutput = true;
+            return -1;
         }
         button("Down - Pressed");
         return timer;
@@ -329,6 +334,7 @@ public:
     std::vector<std::vector<uint32_t>> table;
     int score = 0;
     bool GameOn = true;
+    bool WaitingUntilOutput = false;
     
     Shape *currentShape = nullptr;
     long long timer = 500; //half second
