@@ -11,8 +11,13 @@ public:
     FPPArcadeGame(Json::Value &config);
     virtual ~FPPArcadeGame() {}
     
+    virtual const std::string &getName() = 0;
+    
     virtual void button(const std::string &button) {}
         
+    
+    virtual bool isRunning();
+    virtual void stop();
 protected:
     std::string findOption(const std::string &s, const std::string &def = "");
     

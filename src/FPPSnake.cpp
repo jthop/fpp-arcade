@@ -184,6 +184,11 @@ public:
     bool WaitingUntilOutput = false;
     long long timer = 100;
 };
+const std::string &FPPSnake::getName() {
+    static const std::string name = "Snake";
+    return name;
+}
+
 
 void FPPSnake::button(const std::string &button) {
     PixelOverlayModel *m = PixelOverlayManager::INSTANCE.getModel(modelName);

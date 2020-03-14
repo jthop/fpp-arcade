@@ -43,7 +43,12 @@ function GetTetrisOptions() {
     return html;
 }
 function GetPongOptions() {
-    var html = "Pixel Scaling: <input type='number' value='1' min='1' max='20' class='option1' data-optionname='Pixel Scaling'/>";
+    var html = "Pixel Scaling: <input type='number' value='1' min='1' max='20' class='option1' data-optionname='Pixel Scaling'/>&nbsp;";
+    html += "Controls: <select class='option2' data-optionname='Controls'>";
+    html += "<option value='1'>Up/Down and Left/Right</option>";
+    html += "<option value='2'>UpLeft/DownLeft and UpRight/DownRight</option>";
+    html += "<option value='3'>Up/Left and Right/Down </option>";
+    html += "</select>"
     return html;
 }
 function GetSnakeOptions() {

@@ -341,6 +341,12 @@ public:
 
 };
 
+const std::string &FPPTetris::getName() {
+    static const std::string name = "Tetris";
+    return name;
+}
+
+
 void FPPTetris::button(const std::string &button) {
     PixelOverlayModel *m = PixelOverlayManager::INSTANCE.getModel(modelName);
     if (m != nullptr) {

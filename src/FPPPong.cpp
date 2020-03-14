@@ -15,7 +15,7 @@ FPPPong::~FPPPong() {
 
 class PongEffect : public FPPArcadeGameEffect {
 public:
-    PongEffect(int sc, PixelOverlayModel *m) : FPPArcadeGameEffect(m) {
+    PongEffect(int sc, int c, PixelOverlayModel *m) : FPPArcadeGameEffect(m), controls(c) {
         m->getSize(cols, rows);
         scale = sc;
         cols /= sc;
@@ -163,22 +163,52 @@ public:
     }
     
     void button(const std::string &button) {
-        if (button == "Left - Pressed") {
-            racketP2Speed = -1;
-        } else if (button == "Right - Pressed") {
-            racketP2Speed = 1;
-        } else if (button == "Right - Released" || button == "Left - Released") {
-            racketP2Speed = 0;
-        } else if (button == "Up - Pressed") {
-            racketP1Speed = -1;
-        } else if (button == "Down - Pressed") {
-            racketP1Speed = 1;
-        } else if (button == "Down - Released" || button == "Up - Released") {
-            racketP1Speed = 0;
+        if (controls == 2) {
+            if (button == "Up/Right - Pressed") {
+                racketP2Speed = -1;
+            } else if (button == "Down/Right - Pressed") {
+                racketP2Speed = 1;
+            } else if (button == "Up/Right - Released" || button == "Down/Right - Released") {
+                racketP2Speed = 0;
+            } else if (button == "Up/Left - Pressed") {
+                racketP1Speed = -1;
+            } else if (button == "Down/Left - Pressed") {
+                racketP1Speed = 1;
+            } else if (button == "Down/Left - Released" || button == "Up/Left - Released") {
+                racketP1Speed = 0;
+            }
+        } else if (controls == 3) {
+            if (button == "Right - Pressed") {
+                racketP2Speed = -1;
+            } else if (button == "Down - Pressed") {
+                racketP2Speed = 1;
+            } else if (button == "Right - Released" || button == "Down - Released") {
+                racketP2Speed = 0;
+            } else if (button == "Up - Pressed") {
+                racketP1Speed = -1;
+            } else if (button == "Left - Pressed") {
+                racketP1Speed = 1;
+            } else if (button == "Left - Released" || button == "Up - Released") {
+                racketP1Speed = 0;
+            }
+        } else {
+            if (button == "Left - Pressed") {
+                racketP2Speed = -1;
+            } else if (button == "Right - Pressed") {
+                racketP2Speed = 1;
+            } else if (button == "Right - Released" || button == "Left - Released") {
+                racketP2Speed = 0;
+            } else if (button == "Up - Pressed") {
+                racketP1Speed = -1;
+            } else if (button == "Down - Pressed") {
+                racketP1Speed = 1;
+            } else if (button == "Down - Released" || button == "Up - Released") {
+                racketP1Speed = 0;
+            }
         }
     }
     
-    
+    int controls;
 
     int rows = 20;
     int cols = 20;
@@ -203,8 +233,13 @@ public:
     bool WaitingUntilOutput = false;
     
     long long timer = 50;
-
 };
+
+const std::string &FPPPong::getName() {
+    static const std::string name = "Pong";
+    return name;
+}
+
 
 void FPPPong::button(const std::string &button) {
     PixelOverlayModel *m = PixelOverlayManager::INSTANCE.getModel(modelName);
@@ -216,8 +251,9 @@ void FPPPong::button(const std::string &button) {
             } else {
                 m->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
             }
+            int controls = std::stoi(findOption("Controls", "1"));
             int pixelScaling = std::stoi(findOption("Pixel Scaling", "1"));
-            effect = new PongEffect(pixelScaling, m);
+            effect = new PongEffect(pixelScaling, controls, m);
             effect->button(button);
             m->setRunningEffect(effect, 50);
         } else {

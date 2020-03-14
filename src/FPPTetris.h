@@ -8,6 +8,8 @@ public:
     FPPTetris(Json::Value &config);
     virtual ~FPPTetris();
     
+    virtual const std::string &getName() override;
+    
     virtual void button(const std::string &button) override;
 };
 
