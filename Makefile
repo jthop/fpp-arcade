@@ -5,7 +5,7 @@ all: libfpp-arcade.so
 debug: all
 
 CFLAGS+=-I.
-OBJECTS_fpp_arcade_so += src/FPPArcade.o src/FPPTetris.o src/FPPPong.o src/FPPSnake.o
+OBJECTS_fpp_arcade_so += src/FPPArcade.o src/FPPTetris.o src/FPPPong.o src/FPPSnake.o src/FPPBreakout.o
 LIBS_fpp_arcade_so += -L/opt/fpp/src -lfpp
 CXXFLAGS_src/FPPArcade.o += -I/opt/fpp/src
 

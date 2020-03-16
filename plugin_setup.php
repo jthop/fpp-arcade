@@ -55,6 +55,10 @@ function GetSnakeOptions() {
     var html = "Pixel Scaling: <input type='number' value='1' min='1' max='20' class='option1' data-optionname='Pixel Scaling'/>";
     return html;
 }
+function GetBreakoutOptions() {
+    var html = "";
+    return html;
+}
 
 function GameChanged(sel) {
     var val = $(sel).val();
@@ -65,6 +69,8 @@ function GameChanged(sel) {
         html = GetPongOptions();
     } else if (val == "Snake") {
         html = GetSnakeOptions();
+    } else if (val == "Breakout") {
+        html = GetBreakoutOptions();
     }
     $(sel).parent().parent().find(".GameOptions").html(html);
 }
@@ -78,7 +84,12 @@ function AddArcade() {
         html += " oddRow'";
     }
     html += "'><td class='colNumber rowNumber'>" + id + ".</td><td><input type='checkbox' checked class='enabled'></input><span style='display: none;' class='uniqueId'>" + uniqueId + "</span></td>";
-    html += "<td><select class='game' onChange='GameChanged(this);'><option value='Tetris'>Tetris</option><option value='Pong'>Pong</option><option value='Snake'>Snake</option></select></td>";
+    html += "<td><select class='game' onChange='GameChanged(this);'>";
+    html += "<option value='Tetris'>Tetris</option>";
+    html += "<option value='Pong'>Pong</option>";
+    html += "<option value='Snake'>Snake</option>";
+    html += "<option value='Breakout'>Breakout</option>";
+    html += "</select></td>";
     html += "<td><select class='model'>";
     html += modelOptions;
     html += "</select></td>";

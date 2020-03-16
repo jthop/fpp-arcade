@@ -27,6 +27,7 @@
 #include "FPPTetris.h"
 #include "FPPPong.h"
 #include "FPPSnake.h"
+#include "FPPBreakout.h"
 
 
 std::vector<std::string> BUTTONS({
@@ -115,6 +116,13 @@ static const std::map<uint8_t, std::vector<uint8_t>> LETTERS = {
     {'V', {1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0}},
     {'R', {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1}},
 
+    {'Y', {1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0}},
+    {'U', {1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1}},
+    {'W', {1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1}},
+    {'I', {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0}},
+    {'N', {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1}},
+
+    
     {'0', {1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1}},
     {'1', {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0}},
     {'2', {1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1}},
@@ -239,6 +247,9 @@ public:
         }
         if (game == "Snake") {
             return new FPPSnake(config);
+        }
+        if (game == "Breakout") {
+            return new FPPBreakout(config);
         }
         return nullptr;
     }
