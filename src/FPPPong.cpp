@@ -50,7 +50,11 @@ public:
         outputPixel(ballPosX, ballPosY, 255, 255, 255);
         
     }
-    
+    const std::string &name() const override {
+        static std::string NAME = "Pong";
+        return NAME;
+    }
+
     virtual int32_t update() {
         if (GameOn) {
             moveRackets();

@@ -114,6 +114,10 @@ public:
     ~BreakoutEffect() {
     }
     
+    const std::string &name() const override {
+        static std::string NAME = "Breakout";
+        return NAME;
+    }
 
     void moveBall() {
         ball.x += ball.directionX * ball.speed;

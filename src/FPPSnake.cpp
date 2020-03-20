@@ -57,7 +57,11 @@ public:
         }
         food.push_back({x, y});
     }
-    
+    const std::string &name() const override {
+        static std::string NAME = "Snake";
+        return NAME;
+    }
+
     
     void CopyToModel() {
         model->clearOverlayBuffer();

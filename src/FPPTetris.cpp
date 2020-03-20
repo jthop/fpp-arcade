@@ -144,7 +144,11 @@ public:
             delete currentShape;
         }
     }
-    
+    const std::string &name() const override {
+        static std::string NAME = "Tetris";
+        return NAME;
+    }
+
     void newShape() {
         if (currentShape) {
             delete currentShape;

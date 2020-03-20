@@ -74,6 +74,11 @@ class ClearRunningEffect : public RunningEffect {
 public:
     ClearRunningEffect(PixelOverlayModel *m) : RunningEffect(m) {}
     
+    const std::string &name() const override {
+        static std::string NAME = "Clear";
+        return NAME;
+    }
+    
     virtual int32_t update() {
         if (calledOnce) {
             model->setState(PixelOverlayState(PixelOverlayState::PixelState::Disabled));
