@@ -30,8 +30,8 @@ function SaveJoystickInputs() {
     foreach($controllers as $controller) {
         $contName = $controller['name'];
         $contNameClean = str_replace("-", "_", $contName);
-        $contNameClean = str_replace(":", "_", $contName);
-        $contNameClean = str_replace(",", "_", $contName);
+        $contNameClean = str_replace(":", "_", $contNameClean);
+        $contNameClean = str_replace(",", "_", $contNameClean);
         $contNameClean = str_replace(" ", "_", $contNameClean);
         for ($x = 0; $x < $controller['buttons']; $x++) {
             $buttonNameClean = $contNameClean . "_" . $x;
@@ -105,8 +105,8 @@ $count = 0;
 foreach($controllers as $controller) {
     $contName = $controller['name'];
     $contNameClean = str_replace("-", "_", $contName);
-    $contNameClean = str_replace(":", "_", $contName);
-    $contNameClean = str_replace(",", "_", $contName);
+    $contNameClean = str_replace(":", "_", $contNameClean);
+    $contNameClean = str_replace(",", "_", $contNameClean);
     $contNameClean = str_replace(" ", "_", $contNameClean);
     for ($x = 0; $x < $controller['buttons']; $x++) {
         $buttonNameClean = $contNameClean . "_" . $x;
@@ -159,8 +159,8 @@ if (file_exists('/home/fpp/media/config/joysticks.json')) {
     foreach($jsInputJson as $js) {
         $contName = $js['controller'];
         $contNameClean = str_replace("-", "_", $contName);
-        $contNameClean = str_replace(":", "_", $contName);
-        $contNameClean = str_replace(",", "_", $contName);
+        $contNameClean = str_replace(":", "_", $contNameClean);
+        $contNameClean = str_replace(",", "_", $contNameClean);
         $contNameClean = str_replace(" ", "_", $contNameClean);
 
         $button = $js['button'];
