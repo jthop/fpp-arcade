@@ -369,7 +369,9 @@ public:
     void processEvent(const std::string &ev) {
         const auto &f = events.find(ev);
         if (f != events.end()) {
-            CommandManager::INSTANCE.run(f->second);
+            if (f->second["command"] != "") {
+                CommandManager::INSTANCE.run(f->second);
+            }
         }
     }
     
