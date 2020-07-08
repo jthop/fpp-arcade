@@ -14,7 +14,8 @@ public:
     virtual const std::string &getName() = 0;
     
     virtual void button(const std::string &button) {}
-        
+    virtual void axis(const std::string &axis, int value);
+
     
     virtual bool isRunning();
     virtual void stop();
@@ -23,6 +24,7 @@ protected:
     
     std::string modelName;    
     Json::Value config;
+    int lastValues[2];
 };
 
 

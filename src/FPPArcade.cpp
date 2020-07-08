@@ -30,7 +30,7 @@
 #include "FPPBreakout.h"
 
 
-std::vector<std::string> BUTTONS({
+static std::vector<std::string> BUTTONS({
     "Up - Pressed", "Up - Released",
     "Down - Pressed", "Down - Released",
     "Left - Pressed", "Left - Released",
@@ -42,6 +42,10 @@ std::vector<std::string> BUTTONS({
     "Fire - Pressed", "Fire - Released",
     "Select - Pressed", "Select - Released",
     "Start - Pressed", "Start - Released",
+});
+
+static std::vector<std::string> AXIS({
+    "Up -> Down", "Left -> Right", "Down -> Up", "Right -> Left"
 });
 
 class FPPArcadePlugin;
@@ -56,7 +60,20 @@ public:
     FPPArcadePlugin *plugin;
 };
 
+class FPPArcadeAxisCommand : public Command {
+public:
+    FPPArcadeAxisCommand(FPPArcadePlugin *p) : Command("FPP Arcade Axis"), plugin(p) {
+        args.push_back(CommandArg("Axis", "string", "Axis").setContentList(AXIS));
+        args.push_back(CommandArg("Target", "string", "Target").setContentListUrl("api/models?simple=true", true));
+        args.push_back(CommandArg("Value", "int", "Value", true).setDefaultValue("0").setAdjustable().setRange(-32767, 32767));
+    }
+    
+    virtual std::unique_ptr<Command::Result> run(const std::vector<std::string> &args) override;
+    FPPArcadePlugin *plugin;
+};
+
 FPPArcadeGame::FPPArcadeGame(Json::Value &c) : modelName(c["model"].asString()), config(c) {
+    lastValues[0] = 0; lastValues[1] = 0;
 }
 
 bool FPPArcadeGame::isRunning() {
@@ -96,6 +113,50 @@ void FPPArcadeGame::stop() {
     PixelOverlayModel *m = PixelOverlayManager::INSTANCE.getModel(modelName);
     if (m != nullptr) {
         m->setRunningEffect(new ClearRunningEffect(m), 10);
+    }
+}
+//default behavior will map the axis directions to button presses
+void FPPArcadeGame::axis(const std::string &axis, int value) {
+    std::string btn = "";
+    if (axis == AXIS[2]) { // DOWN->UP
+        if (value == 0 && lastValues[0] < 0) {
+            btn = "Down - Released";
+        } else if (value == 0 && lastValues[0] > 0) {
+            btn = "Up - Released";
+        } else if (value != 0) {
+            btn = value > 0 ? "Up - Pressed" : "Down - Pressed";
+        }
+        lastValues[0] = value;
+    } else if (axis == AXIS[1]) { // left -> right
+        if (value == 0 && lastValues[1] < 0) {
+            btn = "Left - Released";
+        } else if (value == 0 && lastValues[1] > 0) {
+            btn = "Right - Released";
+        } else if (value != 0) {
+            btn = value > 0 ? "Right - Pressed" : "Left - Pressed";
+        }
+        lastValues[1] = value;
+    } else if (axis == AXIS[0]) { // up -> down
+        if (value == 0 && lastValues[0] < 0) {
+            btn = "Up - Released";
+        } else if (value == 0 && lastValues[0] > 0) {
+            btn = "Down - Released";
+        } else if (value != 0) {
+            btn = value < 0 ? "Up - Pressed" : "Down - Pressed";
+        }
+        lastValues[0] = value;
+    } else if (axis == AXIS[3]) { // right -> left
+        if (value == 0 && lastValues[1] < 0) {
+            btn = "Right - Released";
+        } else if (value == 0 && lastValues[1] > 0) {
+            btn = "Left - Released";
+        } else if (value != 0) {
+            btn = value < 0 ? "Right - Pressed" : "Left - Pressed";
+        }
+        lastValues[1] = value;
+    }
+    if (btn != "") {
+        button(btn);
     }
 }
 
@@ -199,8 +260,6 @@ void FPPArcadeGameEffect::outputString(const std::string &s, int x, int y, int r
     }
 }
 
-
-
 class FPPArcadePlugin : public FPPPlugin , public httpserver::http_resource {
 public:
     
@@ -226,10 +285,17 @@ public:
                 for (int x = 0; x < root.size(); x++) {
                     if (root[x]["enabled"].asBool()) {
                         std::string controller = root[x]["controller"].asString();
-                        int button =  root[x]["button"].asInt();
-                        std::string ev = controller + ":" + std::to_string(button);
-                        events[ev + ":1"] = root[x]["pressed"];
-                        events[ev + ":0"] = root[x]["released"];
+                        
+                        if (root[x].isMember("button")) {
+                            int button =  root[x]["button"].asInt();
+                            std::string ev = controller + ":" + std::to_string(button);
+                            events[ev + ":1"] = root[x]["pressed"];
+                            events[ev + ":0"] = root[x]["released"];
+                        } else if (root[x].isMember("axis")) {
+                            int button =  root[x]["axis"].asInt();
+                            std::string ev = controller + ":a" + std::to_string(button);
+                            events[ev] = root[x]["command"];
+                        }
                     }
                 }
             }
@@ -276,6 +342,24 @@ public:
         } else {
             games.front()->button(button);
         }
+    }
+    virtual std::unique_ptr<Command::Result> runAxisCommand(const std::vector<std::string> &args) {
+        const std::string axis = args[0];
+        const std::string model = args.size() > 1 ? args[1] : "";
+        int value = args.size() > 2 ? std::atoi(args[2].c_str()) : 0;
+
+        if (model != "") {
+            if (!games[model].empty()) {
+                games[model].front()->axis(axis, value);
+            }
+        } else {
+            for (auto &a : games) {
+                if (!a.second.empty()) {
+                    a.second.front()->axis(axis, value);
+                }
+            }
+        }
+        return std::make_unique<Command::Result>("FPP Arcade Axis Processed");
     }
     virtual std::unique_ptr<Command::Result> runCommand(const std::vector<std::string> &args) {
         const std::string button = args[0];
@@ -332,7 +416,8 @@ public:
 
     virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) {
         CommandManager::INSTANCE.addCommand(new FPPArcadeCommand(this));
-        
+        CommandManager::INSTANCE.addCommand(new FPPArcadeAxisCommand(this));
+
         for (int x = 0; x < 10; x++) {
             std::string js = "/dev/input/js" + std::to_string(x);
             if (FileExists(js)) {
@@ -348,16 +433,22 @@ public:
                     if (!(ev.type & JS_EVENT_INIT)) {
                         std::string s = a.name;
                         s += " - ";
-                        s += "button: " + std::to_string(ev.number);
+                        if (ev.type == 1) {
+                            s += "button: " + std::to_string(ev.number);
+                        } else if (ev.type == 2) {
+                            s += "axis: " + std::to_string(ev.number);
+                        }
                         s += ", value: " + std::to_string(ev.value);
-                        s += ", type: " + std::to_string(ev.type);
                         lastEvents.push_back(s);
                         while (lastEvents.size() > 20) {
                             lastEvents.pop_front();
                         }
                         
-                        std::string evnt = a.name + ":" + std::to_string(ev.number) + ":" + std::to_string(ev.value);
-                        processEvent(evnt);
+                        std::string evnt = a.name + ":" + (ev.type == 2 ? "a" : "") + std::to_string(ev.number);
+                        if (ev.type == 1) {
+                            evnt += ":" + std::to_string(ev.value);
+                        }
+                        processEvent(evnt, ev.value);
                     }
                 }
                 return false;
@@ -366,11 +457,17 @@ public:
         
     }
     
-    void processEvent(const std::string &ev) {
+    void processEvent(const std::string &ev, int value) {
         const auto &f = events.find(ev);
         if (f != events.end()) {
             if (f->second["command"] != "") {
-                CommandManager::INSTANCE.run(f->second);
+                if (f->second["command"] == "FPP Arcade Axis") {
+                    Json::Value val = f->second;
+                    val["args"][2] = std::to_string(value);
+                    CommandManager::INSTANCE.run(val);
+                } else {
+                    CommandManager::INSTANCE.run(f->second);
+                }
             }
         }
     }
@@ -414,7 +511,9 @@ public:
 std::unique_ptr<Command::Result> FPPArcadeCommand::run(const std::vector<std::string> &args) {
     return plugin->runCommand(args);
 }
-
+std::unique_ptr<Command::Result> FPPArcadeAxisCommand::run(const std::vector<std::string> &args) {
+    return plugin->runAxisCommand(args);
+}
 
 extern "C" {
     FPPPlugin *createPlugin() {

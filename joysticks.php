@@ -12,13 +12,18 @@ function RefreshLastMessages() {
     );
 }
     
-function GetJS(button) {
+function GetJS(button, pb) {
     var js = {};
     js["enabled"] = $("#" + button + "_enabled").is(':checked');
-    js["pressed"] = {};
-    js["released"] = {};
-    CommandToJSON(button + "_PressedCommand", "tablePressed" + button, js["pressed"]);
-    CommandToJSON(button + "_ReleasedCommand", "tableReleased" + button, js["released"]);
+    if (pb) {
+        js["pressed"] = {};
+        js["released"] = {};
+        CommandToJSON(button + "_PressedCommand", "tablePressed" + button, js["pressed"]);
+        CommandToJSON(button + "_ReleasedCommand", "tableReleased" + button, js["released"]);
+    } else {
+        js["command"] = {};
+        CommandToJSON(button + "_AxisCommand", "tableAxis" + button, js["command"]);
+    }
 
     return js;
 }
@@ -35,9 +40,16 @@ function SaveJoystickInputs() {
         $contNameClean = str_replace(" ", "_", $contNameClean);
         for ($x = 0; $x < $controller['buttons']; $x++) {
             $buttonNameClean = $contNameClean . "_" . $x;
-            echo "    var jsb = GetJS('" . $buttonNameClean . "');\n";
+            echo "    var jsb = GetJS('" . $buttonNameClean . "', true);\n";
             echo "    jsb['controller'] = '" . $contName . "';\n";
             echo "    jsb['button'] = " . $x . ";\n";
+            echo "    js.push(jsb);\n";
+        }
+        for ($x = 0; $x < $controller['axis']; $x++) {
+            $buttonNameClean = $contNameClean . "_a" . $x;
+            echo "    var jsb = GetJS('" . $buttonNameClean . "', false);\n";
+            echo "    jsb['controller'] = '" . $contName . "';\n";
+            echo "    jsb['axis'] = " . $x . ";\n";
             echo "    js.push(jsb);\n";
         }
     }
@@ -91,7 +103,7 @@ $(document).ready(function(){
             <tr>
                 <th rowspan='2'>En.</th>
                 <th rowspan='2'>Controller</th>
-                <th rowspan='2'>Button #</th>
+                <th rowspan='2'>Button/Axis</th>
                 <th colspan='2'>Commands</th>
             </tr>
             <tr>
@@ -119,7 +131,7 @@ foreach($controllers as $controller) {
             <tr class='fppTableRow <?= $style ?>' id='row_<?= $count ?>'>
                 <td><input type="checkbox" id="<?= $buttonNameClean ?>_enabled"></td>
                 <td><?= $contName ?></td>
-                <td><?= $x ?></td>
+                <td>Button <?= $x ?></td>
                 <td>
                     <table border=0 class='fppTable' id='tablePressed<?= $buttonNameClean ?>'>
                     <tr>
@@ -137,6 +149,31 @@ foreach($controllers as $controller) {
                 <script>
                 LoadCommandList($('#<?= $buttonNameClean ?>_PressedCommand'));
                 LoadCommandList($('#<?= $buttonNameClean ?>_ReleasedCommand'));
+                </script>
+        </tr>
+<?
+    }
+    for ($x = 0; $x < $controller['axis']; $x++) {
+        $buttonNameClean = $contNameClean . "_a" . $x;
+        $style = " evenRow";
+        if ($count % 2 == 0) {
+            $style = " oddRow";
+        }
+        $count = $count + 1;
+        ?>
+            <tr class='fppTableRow <?= $style ?>' id='row_<?= $count ?>'>
+                <td><input type="checkbox" id="<?= $buttonNameClean ?>_enabled"></td>
+                <td><?= $contName ?></td>
+                <td>Axis <?= $x ?></td>
+                <td colspan="2">
+                    <table border=0 class='fppTable' id='tableAxis<?= $buttonNameClean ?>'>
+                    <tr>
+        <td>Command:</td><td><select id='<?= $buttonNameClean ?>_AxisCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_AxisCommand", "tableAxis<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
+                    </tr>
+                    </table>
+                </td>
+                <script>
+                LoadCommandList($('#<?= $buttonNameClean ?>_AxisCommand'));
                 </script>
         </tr>
 <?
@@ -164,15 +201,19 @@ if (file_exists('/home/fpp/media/config/joysticks.json')) {
         $contNameClean = str_replace(" ", "_", $contNameClean);
 
         $button = $js['button'];
-        $buttonNameClean = $contNameClean . "_" . $button;
+        if ($button != null) {
+            $buttonNameClean = $contNameClean . "_" . $button;
+            echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"pressed\"], '" . $buttonNameClean . "_PressedCommand', 'tablePressed" . $buttonNameClean . "', false);\n";
+            echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"released\"], '" . $buttonNameClean . "_ReleasedCommand', 'tableReleased" . $buttonNameClean . "', false);\n";
+        } else {
+            $buttonNameClean = $contNameClean . "_a" . $js['axis'];
+            echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"command\"], '" . $buttonNameClean . "_AxisCommand', 'tableAxis" . $buttonNameClean . "', false);\n";
+        }
 
         if ($js['enabled'] == true) {
             echo "$('#" . $buttonNameClean . "_enabled').prop('checked', true);\n";
         }
 
-
-        echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"pressed\"], '" . $buttonNameClean . "_PressedCommand', 'tablePressed" . $buttonNameClean . "', false);\n";
-        echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"released\"], '" . $buttonNameClean . "_ReleasedCommand', 'tableReleased" . $buttonNameClean . "', false);\n";
         $x = $x + 1;
     }
 }
