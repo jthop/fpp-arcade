@@ -169,6 +169,9 @@ std::string FPPArcadeGame::findOption(const std::string &s, const std::string &d
             }
         }
     }
+    if (config.isMember(s)) {
+        return config[s].asString();
+    }
     return def;
 }
 

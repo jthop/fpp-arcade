@@ -200,8 +200,8 @@ if (file_exists('/home/fpp/media/config/joysticks.json')) {
         $contNameClean = str_replace(",", "_", $contNameClean);
         $contNameClean = str_replace(" ", "_", $contNameClean);
 
-        $button = $js['button'];
-        if ($button != null) {
+        if (isset($js['button'])) {
+            $button = $js['button'];
             $buttonNameClean = $contNameClean . "_" . $button;
             echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"pressed\"], '" . $buttonNameClean . "_PressedCommand', 'tablePressed" . $buttonNameClean . "', false);\n";
             echo "PopulateExistingCommand(joystickConfig[" . $x . "][\"released\"], '" . $buttonNameClean . "_ReleasedCommand', 'tableReleased" . $buttonNameClean . "', false);\n";

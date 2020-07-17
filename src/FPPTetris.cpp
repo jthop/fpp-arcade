@@ -357,7 +357,7 @@ void FPPTetris::button(const std::string &button) {
         TetrisEffect *effect = dynamic_cast<TetrisEffect*>(m->getRunningEffect());
         if (!effect) {
             if (findOption("overlay", "Overwrite") == "Transparent") {
-                m->setState(PixelOverlayState(PixelOverlayState::PixelState::Transparent));
+                m->setState(PixelOverlayState(PixelOverlayState::PixelState::TransparentRGB));
             } else {
                 m->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
             }

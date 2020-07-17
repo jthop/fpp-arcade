@@ -256,7 +256,7 @@ void FPPBreakout::button(const std::string &button) {
         BreakoutEffect *effect = dynamic_cast<BreakoutEffect*>(m->getRunningEffect());
         if (!effect) {
             if (findOption("overlay", "Overwrite") == "Transparent") {
-                m->setState(PixelOverlayState(PixelOverlayState::PixelState::Transparent));
+                m->setState(PixelOverlayState(PixelOverlayState::PixelState::TransparentRGB));
             } else {
                 m->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
             }

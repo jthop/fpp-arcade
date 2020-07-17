@@ -251,7 +251,7 @@ void FPPPong::button(const std::string &button) {
         PongEffect *effect = dynamic_cast<PongEffect*>(m->getRunningEffect());
         if (!effect) {
             if (findOption("overlay", "Overwrite") == "Transparent") {
-                m->setState(PixelOverlayState(PixelOverlayState::PixelState::Transparent));
+                m->setState(PixelOverlayState(PixelOverlayState::PixelState::TransparentRGB));
             } else {
                 m->setState(PixelOverlayState(PixelOverlayState::PixelState::Enabled));
             }
