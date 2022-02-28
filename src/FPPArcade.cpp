@@ -272,9 +272,9 @@ public:
     FPPArcadePlugin() : FPPPlugin("fpp-arcade") {
         LogInfo(VB_PLUGIN, "Initializing Arcade Plugin\n");
         
-        if (FileExists("/home/fpp/media/config/plugin.fpp-arcade.json")) {
+        if (FileExists(FPP_DIR_CONFIG("/plugin.fpp-arcade.json"))) {
             Json::Value root;
-            if (LoadJsonFromFile("/home/fpp/media/config/plugin.fpp-arcade.json", root)
+            if (LoadJsonFromFile(FPP_DIR_CONFIG("/plugin.fpp-arcade.json"), root)
                 && root.isMember("games")) {
                 for (int x = 0; x < root["games"].size(); x++) {
                     if (root["games"][x]["enabled"].asBool()) {
@@ -285,9 +285,9 @@ public:
             }
         }
         
-        if (FileExists("/home/fpp/media/config/joysticks.json")) {
+        if (FileExists(FPP_DIR_CONFIG("/joysticks.json"))) {
             Json::Value root;
-            if (LoadJsonFromFile("/home/fpp/media/config/joysticks.json", root)) {
+            if (LoadJsonFromFile(FPP_DIR_CONFIG("/joysticks.json"), root)) {
                 for (int x = 0; x < root.size(); x++) {
                     if (root[x]["enabled"].asBool()) {
                         std::string controller = root[x]["controller"].asString();

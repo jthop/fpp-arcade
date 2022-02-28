@@ -187,8 +187,8 @@ foreach($controllers as $controller) {
 <script>
 <?
 
-if (file_exists('/home/fpp/media/config/joysticks.json')) {
-    $data = file_get_contents('/home/fpp/media/config/joysticks.json');
+if (file_exists($mediaDirectory . '/config/joysticks.json')) {
+    $data = file_get_contents($mediaDirectory . '/config/joysticks.json');
     $jsInputJson = json_decode($data, true);
     echo "var joystickConfig = " . json_encode($jsInputJson, JSON_PRETTY_PRINT) . ";\n";
 
