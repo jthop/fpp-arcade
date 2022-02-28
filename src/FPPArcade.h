@@ -2,7 +2,6 @@
 #define __FPPARCADE__
 
 #include <string>
-#include <jsoncpp/json/json.h>
 
 #include "overlays/PixelOverlayEffects.h"
 

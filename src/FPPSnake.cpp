@@ -1,3 +1,4 @@
+#include <fpp-pch.h>
 
 #include "FPPSnake.h"
 #include <array>
@@ -136,7 +137,7 @@ public:
         
     }
     
-    virtual int32_t update() {
+    virtual int32_t update() override {
         if (!GameOn) {
             if (WaitingUntilOutput) {
                 model->setState(PixelOverlayState(PixelOverlayState::PixelState::Disabled));
@@ -154,7 +155,7 @@ public:
             outputString("GAME", cols/ 2 - 8, rows/2-9);
             outputString("OVER", cols/ 2 - 8, rows/2-3);
             char buf[25];
-            sprintf(buf, "%d", snake.size());
+            sprintf(buf, "%d", (uint32_t)snake.size());
             outputString(buf, (cols)/ 2 - 4, rows/2+3);
             model->flushOverlayBuffer();
             return 2000;

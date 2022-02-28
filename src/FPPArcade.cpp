@@ -1,14 +1,17 @@
+#include <fpp-pch.h>
+
 #include <unistd.h>
 #include <ifaddrs.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifndef PLATFORM_OSX
 #include <linux/joystick.h>
+#endif
 #include <arpa/inet.h>
 #include <cstring>
 #include <list>
 #include <vector>
-#include <jsoncpp/json/json.h>
 #include <httpserver.hpp>
 #include <cmath>
 #include <fcntl.h>
@@ -96,7 +99,7 @@ public:
         return NAME;
     }
     
-    virtual int32_t update() {
+    virtual int32_t update() override {
         if (calledOnce) {
             model->setState(PixelOverlayState(PixelOverlayState::PixelState::Disabled));
             return 0;
@@ -417,7 +420,7 @@ public:
         m_ws->register_resource("/arcade", this, true);
     }
 
-    virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) {
+    virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) override {
         CommandManager::INSTANCE.addCommand(new FPPArcadeCommand(this));
         CommandManager::INSTANCE.addCommand(new FPPArcadeAxisCommand(this));
 
@@ -428,7 +431,7 @@ public:
                 joysticks.push_back(Joystick(i));
             }
         }
-        
+#ifndef PLATFORM_OSX
         for (auto & a : joysticks) {
             callbacks[a.file] = [&a, this] (int f) {
                 struct js_event ev;
@@ -457,7 +460,7 @@ public:
                 return false;
             };
         }
-        
+#endif
     }
     
     void processEvent(const std::string &ev, int value) {
@@ -480,6 +483,7 @@ public:
     class Joystick {
     public:
         Joystick(int f) : file(f) {
+#ifndef PLATFORM_OSX
             char buf[256] = {0};
             ioctl(file, JSIOCGNAME(sizeof(buf)), buf);
             name = buf;
@@ -490,6 +494,7 @@ public:
             numAxis = tmp;
             ioctl(file, JSIOCGBUTTONS, &tmp);
             numButtons = tmp;
+#endif
         }
         Joystick(Joystick &&j) : file(j.file), name(j.name), numButtons(j.numButtons), numAxis(j.numAxis) {
             j.file = -1;

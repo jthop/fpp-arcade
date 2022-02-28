@@ -1,3 +1,4 @@
+#include <fpp-pch.h>
 
 #include "FPPBreakout.h"
 #include <array>
@@ -165,7 +166,7 @@ public:
         model->flushOverlayBuffer();
     }
     
-    virtual int32_t update() {
+    virtual int32_t update() override {
         if (!GameOn) {
             model->clearOverlayBuffer();
             model->flushOverlayBuffer();

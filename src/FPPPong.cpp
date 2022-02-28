@@ -1,3 +1,4 @@
+#include <fpp-pch.h>
 
 #include "FPPPong.h"
 #include <array>
@@ -55,7 +56,7 @@ public:
         return NAME;
     }
 
-    virtual int32_t update() {
+    virtual int32_t update() override {
         if (GameOn) {
             moveRackets();
             moveBall();
