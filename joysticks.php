@@ -87,31 +87,34 @@ $(document).ready(function(){
 
 
 
-  <div style="overflow: hidden; padding: 10px;">
-    <span style="float:right">
-    <table border=0>
-    <tr><td style='vertical-align: top;'>Last Events:&nbsp;<input type="button" value="Refresh" class="buttons" onclick="RefreshLastMessages();"></td></tr><tr><td style='vertical-align: top;'><pre id="lastMessages" style='min-width:200px; margin:1px;'></pre></td></tr>
-    </table>
-    </span>
-    <div>
-        <input type="button" value="Save" class="buttons" onClick="SaveJoystickInputs();"></input>
-    </div>
-    <div class='fppTableWrapper'>
-    <div class='fppTableContents fullWidth'>
-    <table id='JoystickInputs' width="100%">
-        <thead>
-            <tr>
-                <th rowspan='2'>En.</th>
-                <th rowspan='2'>Controller</th>
-                <th rowspan='2'>Button/Axis</th>
-                <th colspan='2'>Commands</th>
-            </tr>
-            <tr>
-                <th >Pressed</th>
-                <th >Released</th>
-            </tr>
-        </thead>
-        <tbody>
+<div id="global" class="settings">
+<legend>JoyStick/Gamepad Config</legend>
+<div class="row">
+    <div class="col-auto mr-auto">
+        <div classs="row">
+            <div class="col-auto">
+                <input type="button" value="Save" class="buttons genericButton" onclick="SaveJoystickInputs();">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-auto">
+                <div class='fppTableWrapper'>
+                    <div class='fppTableContents'>
+                        <table  class="fppSelectableRowTable" id="JoystickInputs"  width='100%'>
+                            <thead>
+                                <tr>
+                                    <th rowspan='2' style="text-align:center">En.</th>
+                                    <th rowspan='2' style="text-align:center; margin-right:50px;">Controller</th>
+                                    <th rowspan='2' style="text-align:center">Button/Axis</th>
+                                    <th colspan='2' style="text-align:center">Commands</th>
+                                </tr>
+                                <tr>
+                                    <th  style="text-align:center">Pressed</th>
+                                    <th  style="text-align:center">Released</th>
+                                </tr>
+                            </thead>
+                            <tbody class="ui-sortable">
+
 <?
 $count = 0;
 foreach($controllers as $controller) {
@@ -130,26 +133,26 @@ foreach($controllers as $controller) {
         ?>
             <tr class='fppTableRow <?= $style ?>' id='row_<?= $count ?>'>
                 <td><input type="checkbox" id="<?= $buttonNameClean ?>_enabled"></td>
-                <td><?= $contName ?></td>
+                <td style="padding-left:10px;padding-right:20px;"><?= $contName ?></td>
                 <td>Button <?= $x ?></td>
                 <td>
                     <table border=0 class='fppTable' id='tablePressed<?= $buttonNameClean ?>'>
                     <tr>
-        <td>Command:</td><td><select id='<?= $buttonNameClean ?>_PressedCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_PressedCommand", "tablePressed<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
+        <td></td><td><select id='<?= $buttonNameClean ?>_PressedCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_PressedCommand", "tablePressed<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
                     </tr>
                     </table>
                 </td>
                 <td>
                         <table border=0 class='fppTable' id='tableReleased<?= $buttonNameClean ?>'>
                         <tr>
-        <td>Command:</td><td><select id='<?= $buttonNameClean ?>_ReleasedCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_ReleasedCommand", "tableReleased<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
+        <td></td><td><select id='<?= $buttonNameClean ?>_ReleasedCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_ReleasedCommand", "tableReleased<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
                         </tr>
                         </table>
-                </td>
                 <script>
                 LoadCommandList($('#<?= $buttonNameClean ?>_PressedCommand'));
                 LoadCommandList($('#<?= $buttonNameClean ?>_ReleasedCommand'));
                 </script>
+            </td>
         </tr>
 <?
     }
@@ -163,27 +166,48 @@ foreach($controllers as $controller) {
         ?>
             <tr class='fppTableRow <?= $style ?>' id='row_<?= $count ?>'>
                 <td><input type="checkbox" id="<?= $buttonNameClean ?>_enabled"></td>
-                <td><?= $contName ?></td>
+                <td style="padding-left:10px;padding-right:20px;"><?= $contName ?></td>
                 <td>Axis <?= $x ?></td>
                 <td colspan="2">
                     <table border=0 class='fppTable' id='tableAxis<?= $buttonNameClean ?>'>
                     <tr>
-        <td>Command:</td><td><select id='<?= $buttonNameClean ?>_AxisCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_AxisCommand", "tableAxis<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
+        <td></td><td><select id='<?= $buttonNameClean ?>_AxisCommand' onChange='CommandSelectChanged("<?= $buttonNameClean ?>_AxisCommand", "tableAxis<?= $buttonNameClean ?>", false);'><option value=""></option></select></td>
                     </tr>
                     </table>
-                </td>
                 <script>
                 LoadCommandList($('#<?= $buttonNameClean ?>_AxisCommand'));
                 </script>
+            </td>
         </tr>
 <?
     }
 }
 ?>
-</tbody>
-</table>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-auto">
+        <div>
+            <div class="row">
+                <div class="col">
+                    Last Messages:&nbsp;<input type="button" value="Refresh" class="buttons" onclick="RefreshLastMessages();">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <pre id="lastMessages" style='min-width:150px; margin:1px;min-height:300px;'></pre>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
+
+
 <script>
 <?
 

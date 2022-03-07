@@ -7,6 +7,10 @@
 #include <sys/socket.h>
 #ifndef PLATFORM_OSX
 #include <linux/joystick.h>
+#else
+extern "C" {
+#include <SDL2/SDL.h>
+}
 #endif
 #include <arpa/inet.h>
 #include <cstring>
@@ -420,10 +424,65 @@ public:
         m_ws->register_resource("/arcade", this, true);
     }
 
+    static int SDLCALL controller_event_filter(void *userdata, SDL_Event * event) {
+        FPPArcadePlugin *p = (FPPArcadePlugin*)userdata;
+        return p->handleSDLControllerEvent(event);
+    }
+    int handleSDLControllerEvent(SDL_Event * event) {
+        switch (event->type) {
+            case SDL_CONTROLLERAXISMOTION: {
+                SDL_ControllerAxisEvent *ae = (SDL_ControllerAxisEvent*)event;
+                for (auto &j : joysticks) {
+                    if (j.joystickId == ae->which) {
+                        std::string s = j.name;
+                        s += " - ";
+                        s += "axis: " + std::to_string(ae->axis);
+                        s += ", value: " + std::to_string(ae->value);
+                        lastEvents.push_back(s);
+                        while (lastEvents.size() > 20) {
+                            lastEvents.pop_front();
+                        }
+                        std::string evnt = j.name + ":a" + std::to_string(ae->axis);
+                        processEvent(evnt, ae->value);
+                    }
+                }
+                return 0;
+            }
+            case SDL_CONTROLLERBUTTONDOWN:
+            case SDL_CONTROLLERBUTTONUP: {
+                SDL_ControllerButtonEvent *be = (SDL_ControllerButtonEvent*)event;
+                for (auto &j : joysticks) {
+                    if (j.joystickId == be->which) {
+                        std::string s = j.name;
+                        s += " - ";
+                        s += "button: " + std::to_string(be->button);
+                        s += ", value: " + std::to_string(be->state);
+                        lastEvents.push_back(s);
+                        while (lastEvents.size() > 20) {
+                            lastEvents.pop_front();
+                        }
+                        std::string evnt = j.name + ":" + std::to_string(be->button) + ":" + std::to_string(be->state);
+                        processEvent(evnt, be->state);
+                    }
+                }
+                return 0;
+            }
+        }
+        return 1;  // let all events be added to the queue since we always return 1.
+    }
     virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) override {
         CommandManager::INSTANCE.addCommand(new FPPArcadeCommand(this));
         CommandManager::INSTANCE.addCommand(new FPPArcadeAxisCommand(this));
 
+#ifdef PLATFORM_OSX
+        SDL_Init(SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS);
+        SDL_SetEventFilter(controller_event_filter, this);
+        for (int x = 0; x < SDL_NumJoysticks(); x++) {
+            if (SDL_IsGameController(x)) {
+                joysticks.emplace_back(Joystick(x));
+            }
+        }
+#else
         for (int x = 0; x < 10; x++) {
             std::string js = "/dev/input/js" + std::to_string(x);
             if (FileExists(js)) {
@@ -431,7 +490,6 @@ public:
                 joysticks.push_back(Joystick(i));
             }
         }
-#ifndef PLATFORM_OSX
         for (auto & a : joysticks) {
             callbacks[a.file] = [&a, this] (int f) {
                 struct js_event ev;
@@ -494,16 +552,29 @@ public:
             numAxis = tmp;
             ioctl(file, JSIOCGBUTTONS, &tmp);
             numButtons = tmp;
+#else
+            controller = SDL_GameControllerOpen(f);
+            joystickId = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+            name = SDL_GameControllerName(controller);
+            numAxis = SDL_JoystickNumAxes(SDL_GameControllerGetJoystick(controller));
+            numButtons = std::max(15, SDL_JoystickNumButtons(SDL_GameControllerGetJoystick(controller)));
+            //printf("Mapping: %s\n",  SDL_GameControllerMapping(controller));
 #endif
         }
-        Joystick(Joystick &&j) : file(j.file), name(j.name), numButtons(j.numButtons), numAxis(j.numAxis) {
+        Joystick(Joystick &&j) : file(j.file), name(j.name), numButtons(j.numButtons), numAxis(j.numAxis), controller(j.controller), joystickId(j.joystickId) {
             j.file = -1;
+            j.controller = nullptr;
         }
         ~Joystick() {
             if (file != -1) {
                 close(file);
             }
+            if (controller) {
+                SDL_GameControllerClose(controller);
+            }
         }
+        SDL_GameController *controller = nullptr;
+        SDL_JoystickID joystickId = 0;
         std::string name;
         int numButtons = 0;
         int numAxis = 0;

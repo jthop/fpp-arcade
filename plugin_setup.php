@@ -28,7 +28,6 @@ $pluginJson = convertAndGetSettings();
 
 
 <div id="global" class="settings">
-<fieldset>
 <legend>FPP Arcade Config</legend>
 
 <script>
@@ -268,6 +267,4 @@ $.each(arcadeConfig["games"], function( key, val ) {
     }
 });
 </script>
-
-</fieldset>
 </div>
