@@ -301,6 +301,9 @@ public:
     }
     
     void button(const std::string &button) {
+        if (!GameOn) {
+            return;
+        }
         Shape tmp(*currentShape);
         if (button == "Left - Pressed") {
             tmp.col--;  //move left

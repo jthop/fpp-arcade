@@ -108,8 +108,9 @@ public:
         
         ball.x = w / 2;
         ball.y = h * 2 / 3;
-        ball.height = 1;
-        ball.width = 1;
+        ball.height = paddle.height;
+        ball.width = paddle.height;
+        ball.speed *= (float)paddle.height;
         CopyToModel();
     }
     ~BreakoutEffect() {
@@ -178,7 +179,7 @@ public:
             WaitingUntilOutput = true;
             return -1;
         }
-        paddle.x += direction;
+        paddle.x += direction * paddle.height;
         if (paddle.x < 0) {
             paddle.x = 0;
         } else if ((paddle.x + paddle.width) >= model->getWidth()) {
@@ -199,15 +200,17 @@ public:
         if (ball.y >= model->getHeight()) {
             //end game
             GameOn = false;
-            outputString("GAME", (model->getWidth()-8)/ 2, model->getHeight()/2-6);
-            outputString("OVER", (model->getWidth()-8)/ 2, model->getHeight()/2);
+            float scl = paddle.height;
+            outputString("GAME", (model->getWidth()-(8 * scl))/ 2 / scl, (model->getHeight()/2-(6 * scl)) / scl, 255, 255, 255, scl);
+            outputString("OVER", (model->getWidth()-(8 * scl))/ 2 / scl, model->getHeight()/2 / scl, 255, 255, 255, scl);
             model->flushOverlayBuffer();
             return 2000;
         }
         if (blocks.empty()) {
             GameOn = false;
-            outputString("YOU", (model->getWidth()-6)/ 2, model->getHeight()/2-6);
-            outputString("WIN", (model->getWidth()-6)/ 2, model->getHeight()/2);
+            float scl = paddle.height;
+            outputString("YOU", (model->getWidth()-(6 * scl))/ 2 / scl, (model->getHeight()/2-(6 * scl)) / scl, 255, 255, 255, scl);
+            outputString("WIN", (model->getWidth()-(6 * scl))/ 2 / scl, model->getHeight()/2 / scl, 255, 255, 255, scl);
             model->flushOverlayBuffer();
             return 2000;
         }

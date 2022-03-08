@@ -42,7 +42,16 @@ public:
         char buf[25];
         sprintf(buf, "%d:%d", p1Score, p2Score);
         int len = strlen(buf);
-        outputString(buf, model->getWidth()/2 - len*2, 0, 128, 128, 128, 1);
+        float scl = scale;
+        
+        while (((model->getHeight() / scl) < 40) && scl > 1) {
+            scl *= 0.80;
+        }
+        if (scl < 1) {
+            scl = 1;
+        }
+        
+        outputString(buf, (model->getWidth()/2 - len*2) / scl, 0, 128, 128, 128, scl);
         
         for (int y = 0; y < racketSize; y++) {
             outputPixel(0, racketP1Pos + y, 255, 255, 255);
