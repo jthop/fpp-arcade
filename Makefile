@@ -7,7 +7,7 @@ debug: all
 
 CFLAGS+=-I.
 OBJECTS_fpp_arcade_so += src/FPPArcade.o src/FPPTetris.o src/FPPPong.o src/FPPSnake.o src/FPPBreakout.o
-LIBS_fpp_arcade_so += -L$(SRCDIR) -lfpp -ljsoncpp -lhttpserver -lsdl2
+LIBS_fpp_arcade_so += -L$(SRCDIR) -lfpp -ljsoncpp -lhttpserver -lSDL2
 CXXFLAGS_src/FPPArcade.o += -I$(SRCDIR)
 
 
