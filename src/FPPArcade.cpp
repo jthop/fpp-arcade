@@ -424,6 +424,7 @@ public:
         m_ws->register_resource("/arcade", this, true);
     }
 
+#ifdef PLATFORM_OSX
     static int SDLCALL controller_event_filter(void *userdata, SDL_Event * event) {
         FPPArcadePlugin *p = (FPPArcadePlugin*)userdata;
         return p->handleSDLControllerEvent(event);
@@ -470,6 +471,8 @@ public:
         }
         return 1;  // let all events be added to the queue since we always return 1.
     }
+#endif
+
     virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) override {
         CommandManager::INSTANCE.addCommand(new FPPArcadeCommand(this));
         CommandManager::INSTANCE.addCommand(new FPPArcadeAxisCommand(this));
@@ -569,12 +572,19 @@ public:
             if (file != -1) {
                 close(file);
             }
+#ifdef PLATFORM_OSX
             if (controller) {
                 SDL_GameControllerClose(controller);
             }
+#endif
         }
+#ifdef PLATFORM_OSX
         SDL_GameController *controller = nullptr;
         SDL_JoystickID joystickId = 0;
+#else
+        void *controller = nullptr;
+        int joystickId = 0;
+#endif
         std::string name;
         int numButtons = 0;
         int numAxis = 0;
