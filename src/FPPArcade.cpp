@@ -1,11 +1,18 @@
 #include <fpp-pch.h>
 
+
+#ifdef PLATFORM_OSX
+#define USE_SDL_CONTROLLERS
+#else
+//#define USE_SDL_CONTROLLERS
+#endif
+
 #include <unistd.h>
 #include <ifaddrs.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#ifndef PLATFORM_OSX
+#ifndef USE_SDL_CONTROLLERS
 #include <linux/joystick.h>
 #else
 extern "C" {
@@ -424,7 +431,7 @@ public:
         m_ws->register_resource("/arcade", this, true);
     }
 
-#ifdef PLATFORM_OSX
+#ifdef USE_SDL_CONTROLLERS
     static int SDLCALL controller_event_filter(void *userdata, SDL_Event * event) {
         FPPArcadePlugin *p = (FPPArcadePlugin*)userdata;
         return p->handleSDLControllerEvent(event);
@@ -473,11 +480,20 @@ public:
     }
 #endif
 
+    void checkUniqueNames() {
+        std::map<std::string, int> names;
+        for (auto &j : joysticks) {
+            names[j.name]++;
+            if (names[j.name] != 1) {
+                j.name = j.name + " - " + std::to_string(names[j.name]);
+            }
+        }
+    }
     virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) override {
         CommandManager::INSTANCE.addCommand(new FPPArcadeCommand(this));
         CommandManager::INSTANCE.addCommand(new FPPArcadeAxisCommand(this));
 
-#ifdef PLATFORM_OSX
+#ifdef USE_SDL_CONTROLLERS
         SDL_Init(SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS);
         SDL_SetEventFilter(controller_event_filter, this);
         for (int x = 0; x < SDL_NumJoysticks(); x++) {
@@ -485,14 +501,16 @@ public:
                 joysticks.emplace_back(Joystick(x));
             }
         }
+        checkUniqueNames();
 #else
         for (int x = 0; x < 10; x++) {
             std::string js = "/dev/input/js" + std::to_string(x);
             if (FileExists(js)) {
                 int i = open(js.c_str(), O_RDONLY | O_NONBLOCK);
-                joysticks.push_back(Joystick(i));
+                joysticks.emplace_back(Joystick(i));
             }
         }
+        checkUniqueNames();
         for (auto & a : joysticks) {
             callbacks[a.file] = [&a, this] (int f) {
                 struct js_event ev;
@@ -544,7 +562,7 @@ public:
     class Joystick {
     public:
         Joystick(int f) : file(f) {
-#ifndef PLATFORM_OSX
+#ifndef USE_SDL_CONTROLLERS
             char buf[256] = {0};
             ioctl(file, JSIOCGNAME(sizeof(buf)), buf);
             name = buf;
@@ -561,7 +579,6 @@ public:
             name = SDL_GameControllerName(controller);
             numAxis = SDL_JoystickNumAxes(SDL_GameControllerGetJoystick(controller));
             numButtons = std::max(15, SDL_JoystickNumButtons(SDL_GameControllerGetJoystick(controller)));
-            //printf("Mapping: %s\n",  SDL_GameControllerMapping(controller));
 #endif
         }
         Joystick(Joystick &&j) : file(j.file), name(j.name), numButtons(j.numButtons), numAxis(j.numAxis), controller(j.controller), joystickId(j.joystickId) {
@@ -572,13 +589,13 @@ public:
             if (file != -1) {
                 close(file);
             }
-#ifdef PLATFORM_OSX
+#ifdef USE_SDL_CONTROLLERS
             if (controller) {
                 SDL_GameControllerClose(controller);
             }
 #endif
         }
-#ifdef PLATFORM_OSX
+#ifdef USE_SDL_CONTROLLERS
         SDL_GameController *controller = nullptr;
         SDL_JoystickID joystickId = 0;
 #else

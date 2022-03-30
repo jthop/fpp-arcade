@@ -1,5 +1,6 @@
 <?php
 $data = file_get_contents('http://127.0.0.1:32322/arcade/controllers');
+$targets = json_decode(file_get_contents('http://127.0.0.1/api/models?simple=true'), true);
 $controllers = json_decode($data, true);
 ?>
 <script language="Javascript">
@@ -77,6 +78,72 @@ function SaveJoystickInputs() {
     });
     
 }
+var GPMAPPING = {
+    "1": "Fire",
+    "8": "Select",
+    "9": "Start",
+    "11": "Up",
+    "12": "Down",
+    "13": "Left",
+    "14": "Right",
+    "a0": "Left -> Right",
+    "a1": "Up -> Down"
+};
+var DPMAPPING = {
+    "0": "Up",
+    "1": "Down",
+    "2": "Right",
+    "3": "Left",
+    "4": "Down/Left",
+    "5": "Down/Right",
+    "6": "Up/Left",
+    "7": "Up/Right",
+    "8": "Select",
+    "9": "Start"
+};
+
+function SetDefaultsForController() {
+    var controllName = $('#ControllerSelect').val();
+    var controllType = $('#ControllerType').val();
+    var target = $('#Target').val();
+
+    var js = Array();
+    js["command"] = "FPP Arcade Button";
+    js["multisyncCommand"] = false,
+    js["multisyncHosts"] = "",
+    js["args"] = Array();
+    js["args"].push("Fire - Pressed");
+    js["args"].push(target);
+
+    var jsa = Array();
+    jsa["command"] = "FPP Arcade Axis";
+    jsa["multisyncCommand"] = false,
+    jsa["multisyncHosts"] = "",
+    jsa["args"] = Array();
+    jsa["args"].push("");
+    jsa["args"].push(target);
+    jsa["args"].push("0");
+
+    var mapping = (controllType == "GP") ? GPMAPPING : DPMAPPING;
+    for (var key in mapping) {
+        var buttonNameClean = controllName + "_" + key;
+        if (key[0] == 'a') {
+            var tbName = "tableAxis" + buttonNameClean;
+            jsa["args"][0] = mapping[key];
+            PopulateExistingCommand(jsa, buttonNameClean + "_AxisCommand", tbName);
+        } else {
+            var tbName = "tablePressed" + buttonNameClean;
+            js["args"][0] = mapping[key] + " - Pressed";
+            PopulateExistingCommand(js, buttonNameClean + "_PressedCommand", tbName);
+            js["args"][0] = mapping[key] + " - Released";
+            tbName = "tableReleased" + controllName + "_" + key;
+            PopulateExistingCommand(js, buttonNameClean + "_ReleasedCommand", tbName);
+        }
+        $("#" + buttonNameClean + "_enabled").prop('checked', true);
+    }
+
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 $(document).ready(function(){
@@ -92,8 +159,36 @@ $(document).ready(function(){
 <div class="row">
     <div class="col-auto mr-auto">
         <div classs="row">
-            <div class="col-auto">
+            <div class="col-md1">
                 <input type="button" value="Save" class="buttons genericButton" onclick="SaveJoystickInputs();">
+                <span style="display: inline-block; width: 100px;">&nbsp;</span>
+                <select id="ControllerSelect">
+                <?
+$count = 0;
+foreach($controllers as $controller) {
+    $contName = $controller['name'];
+    $contNameClean = str_replace("-", "_", $contName);
+    $contNameClean = str_replace(":", "_", $contNameClean);
+    $contNameClean = str_replace(",", "_", $contNameClean);
+    $contNameClean = str_replace(" ", "_", $contNameClean);
+
+    echo "<option value='" . $contNameClean . "'>" . $controller['name'] . "</option>\n";
+}
+?>
+                </select>
+                <select id="ControllerType">
+                    <option value="GP">Game Pad</option>
+                    <option value="DM">Dance Mat</option>
+                </select>
+                <select id="Target">
+                    <option value="" selected></option>
+<?
+foreach ($targets as $target) {
+    echo "<option value='" . $target . "'>" . $target . "</option>\n";
+}
+?>
+                </select>
+                <input type="button" value="Set Defaults" class="buttons genericButton" onclick="SetDefaultsForController();">
             </div>
         </div>
         <div class="row">
