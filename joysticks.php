@@ -39,6 +39,7 @@ function SaveJoystickInputs() {
         $contNameClean = str_replace(":", "_", $contNameClean);
         $contNameClean = str_replace(",", "_", $contNameClean);
         $contNameClean = str_replace(" ", "_", $contNameClean);
+	$contNameClean = str_replace(".", "_", $contNameClean);
         for ($x = 0; $x < $controller['buttons']; $x++) {
             $buttonNameClean = $contNameClean . "_" . $x;
             echo "    var jsb = GetJS('" . $buttonNameClean . "', true);\n";
@@ -171,7 +172,7 @@ foreach($controllers as $controller) {
     $contNameClean = str_replace(":", "_", $contNameClean);
     $contNameClean = str_replace(",", "_", $contNameClean);
     $contNameClean = str_replace(" ", "_", $contNameClean);
-
+    $contNameClean = str_replace(".", "_", $contNameClean);
     echo "<option value='" . $contNameClean . "'>" . $controller['name'] . "</option>\n";
 }
 ?>
@@ -218,6 +219,7 @@ foreach($controllers as $controller) {
     $contNameClean = str_replace(":", "_", $contNameClean);
     $contNameClean = str_replace(",", "_", $contNameClean);
     $contNameClean = str_replace(" ", "_", $contNameClean);
+    $contNameClean = str_replace(".", "_", $contNameClean);
     for ($x = 0; $x < $controller['buttons']; $x++) {
         $buttonNameClean = $contNameClean . "_" . $x;
         $style = " evenRow";
@@ -318,6 +320,7 @@ if (file_exists($mediaDirectory . '/config/joysticks.json')) {
         $contNameClean = str_replace(":", "_", $contNameClean);
         $contNameClean = str_replace(",", "_", $contNameClean);
         $contNameClean = str_replace(" ", "_", $contNameClean);
+        $contNameClean = str_replace(".", "_", $contNameClean);
 
         if (isset($js['button'])) {
             $button = $js['button'];
