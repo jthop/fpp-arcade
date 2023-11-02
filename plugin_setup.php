@@ -151,7 +151,7 @@ function SaveArcade() {
     var data = JSON.stringify(arcadeConfig);
     $.ajax({
         type: "POST",
-        url: 'fppjson.php?command=setPluginJSON&plugin=fpp-arcade',
+        url: 'api/configfile/plugin.fpp-arcade.json',
         dataType: 'json',
         async: false,
         data: data,
