@@ -395,9 +395,7 @@ public:
         return std::make_unique<Command::Result>("FPP Arcade Button Processed");
     }
     
-    
-    
-    virtual const std::shared_ptr<httpserver::http_response> render_GET(const httpserver::http_request &req) override {
+    virtual HTTP_RESPONSE_CONST std::shared_ptr<httpserver::http_response> render_GET(const httpserver::http_request &req) override {
         int plen = req.get_path_pieces().size();
         if (plen == 2) {
             if (req.get_path_pieces()[1] == "controllers") {
