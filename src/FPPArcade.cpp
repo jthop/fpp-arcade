@@ -86,7 +86,18 @@ public:
     FPPArcadePlugin *plugin;
 };
 
-FPPArcadeGame::FPPArcadeGame(Json::Value &c) : modelName(c["model"].asString()), config(c) {
+class FPPArcadeSelectGameCommand : public Command {
+public:
+    FPPArcadeSelectGameCommand(FPPArcadePlugin *p) : Command("FPP Arcade Select Game"), plugin(p) {
+        args.push_back(CommandArg("Game", "int", "Game", true).setDefaultValue("1").setAdjustable().setRange(1, 100));
+        args.push_back(CommandArg("Target", "string", "Target").setContentListUrl("api/models?simple=true", true));
+    }
+    
+    virtual std::unique_ptr<Command::Result> run(const std::vector<std::string> &args) override;
+    FPPArcadePlugin *plugin;
+};
+
+FPPArcadeGame::FPPArcadeGame(Json::Value &c) : modelName(c["model"].asString()), config(c), idx(0) {
     lastValues[0] = 0; lastValues[1] = 0;
 }
 
@@ -283,6 +294,7 @@ public:
     FPPArcadePlugin() : FPPPlugin("fpp-arcade") {
         LogInfo(VB_PLUGIN, "Initializing Arcade Plugin\n");
         
+        int idx = 0;
         if (FileExists(FPP_DIR_CONFIG("/plugin.fpp-arcade.json"))) {
             Json::Value root;
             if (LoadJsonFromFile(FPP_DIR_CONFIG("/plugin.fpp-arcade.json"), root)
@@ -291,6 +303,9 @@ public:
                     if (root["games"][x]["enabled"].asBool()) {
                         std::string model = root["games"][x]["model"].asString();
                         games[model].push_back(createGame(root["games"][x]));
+                        if (games[model].back() != nullptr) {
+                            games[model].back()->setIdx(++idx);
+                        }
                     }
                 }
             }
@@ -359,6 +374,24 @@ public:
         } else {
             games.front()->button(button);
         }
+    }
+    std::unique_ptr<Command::Result>  selectGame(const std::vector<std::string> &args) {
+        int idx = std::atoi(args[0].c_str());
+        const std::string model = args.size() > 1 ? args[1] : "";
+        if (games[model].front()->isRunning()) {
+            games[model].front()->stop();
+        }
+        int max = games[model].size();
+        for (int x = 0; x < max; x++) {
+            FPPArcadeGame *g = games[model].front();
+            if (g->getIdx() == idx) {
+                return std::make_unique<Command::Result>("FPP Arcade Game " + g->getName() + " Selected");
+            } else {
+                games[model].pop_front();
+                games[model].push_back(g);
+            }
+        }
+        return std::make_unique<Command::ErrorResult>("FPP Arcade Could not find game matching " + args[0] + " for model " + model);
     }
     virtual std::unique_ptr<Command::Result> runAxisCommand(const std::vector<std::string> &args) {
         const std::string axis = args[0];
@@ -490,6 +523,7 @@ public:
     virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) override {
         CommandManager::INSTANCE.addCommand(new FPPArcadeCommand(this));
         CommandManager::INSTANCE.addCommand(new FPPArcadeAxisCommand(this));
+        CommandManager::INSTANCE.addCommand(new FPPArcadeSelectGameCommand(this));
 
 #ifdef USE_SDL_CONTROLLERS
         SDL_Init(SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS);
@@ -617,6 +651,9 @@ std::unique_ptr<Command::Result> FPPArcadeCommand::run(const std::vector<std::st
 }
 std::unique_ptr<Command::Result> FPPArcadeAxisCommand::run(const std::vector<std::string> &args) {
     return plugin->runAxisCommand(args);
+}
+std::unique_ptr<Command::Result> FPPArcadeSelectGameCommand::run(const std::vector<std::string> &args) {
+    return plugin->selectGame(args);
 }
 
 extern "C" {

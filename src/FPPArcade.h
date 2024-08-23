@@ -18,12 +18,16 @@ public:
     
     virtual bool isRunning();
     virtual void stop();
+
+    int getIdx() const { return idx; };
+    void setIdx(int i) { idx = i; }
 protected:
     std::string findOption(const std::string &s, const std::string &def = "");
     
     std::string modelName;    
     Json::Value config;
     int lastValues[2];
+    int idx;
 };
 
 
