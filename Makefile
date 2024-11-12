@@ -2,7 +2,7 @@ SRCDIR ?= /opt/fpp/src
 include $(SRCDIR)/makefiles/common/setup.mk
 include $(SRCDIR)/makefiles/platform/*.mk
 
-all: libfpp-arcade.$(SHLIB_EXT)
+all: libfpp-arcade-v2.$(SHLIB_EXT)
 debug: all
 
 CFLAGS+=-I.
