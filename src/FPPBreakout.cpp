@@ -218,7 +218,7 @@ public:
 
             curl = curl_easy_init();
             if(curl) {
-                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/breakout/loose/callback");
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/cb?g=breakout&w=0");
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
                 res = curl_easy_perform(curl);
@@ -235,14 +235,14 @@ public:
             outputString("WIN", (model->getWidth()-(6 * scl))/ 2 / scl, model->getHeight()/2 / scl, 255, 255, 255, scl);
             model->flushOverlayBuffer();
 
-                        // send curl notifying us game is over
+            // send curl notifying us game is over
             CURL * curl;
             CURLcode res;
             std::string readBuffer;
 
             curl = curl_easy_init();
             if(curl) {
-                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/breakout/win/callback");
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/cb?g=breakout&w=1");
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
                 res = curl_easy_perform(curl);

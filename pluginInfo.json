@@ -1,8 +1,8 @@
 {
   "repoName": "fpp-arcade-v2",
   "name": "FPP Arcade V2",
-  "author": "Daniel Kulp",
-  "description": "Various Games to Play on FPP Pixel Overlay Models",
+  "author": "Daniel Kulp forked by jthop",
+  "description": "FPP Arcade - now with basic feedback",
   "homeURL": "https://github.com/jthop/fpp-arcade",
   "srcURL": "https://github.com/jthop/fpp-arcade.git",
   "bugURL": "https://github.com/jthop/fpp-arcade/issues",
