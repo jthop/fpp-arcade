@@ -43,6 +43,14 @@ extern "C" {
 #include "FPPSnake.h"
 #include "FPPBreakout.h"
 
+#include <curl/curl.h>
+#include <iostream>
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp){
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
 
 static std::vector<std::string> BUTTONS({
     "Up - Pressed", "Up - Released",
@@ -293,6 +301,21 @@ public:
     
     FPPArcadePlugin() : FPPPlugin("fpp-arcade") {
         LogInfo(VB_PLUGIN, "Initializing Arcade Plugin\n");
+
+        CURL * curl;
+        CURLcode res;
+        std::string readBuffer;
+
+        curl = curl_easy_init();
+        if(curl) {
+            curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/init");
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+
+            std::cout << readBuffer << std::endl;
+        }
         
         int idx = 0;
         if (FileExists(FPP_DIR_CONFIG("/plugin.fpp-arcade.json"))) {

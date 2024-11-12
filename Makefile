@@ -14,7 +14,7 @@ CXXFLAGS_src/FPPArcade.o += -I$(SRCDIR)
 %.o: %.cpp Makefile
 	$(CCACHE) $(CC) $(CFLAGS) $(CXXFLAGS) $(CXXFLAGS_$@) -c $< -o $@
 
-libfpp-arcade.$(SHLIB_EXT): $(OBJECTS_fpp_arcade_so) $(SRCDIR)/libfpp.$(SHLIB_EXT)
+libfpp-arcade-v2.$(SHLIB_EXT): $(OBJECTS_fpp_arcade_so) $(SRCDIR)/libfpp.$(SHLIB_EXT)
 	$(CCACHE) $(CC) -shared $(CFLAGS_$@) $(OBJECTS_fpp_arcade_so) $(LIBS_fpp_arcade_so) $(LDFLAGS) -o $@
 
 clean:
