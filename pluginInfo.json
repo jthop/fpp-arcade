@@ -1,39 +1,38 @@
 {
-	"repoName": "fpp-arcade",
-	"name": "FPP Arcade",
-	"author": "Daniel Kulp",
-	"description": "Various Games to Play on FPP Pixel Overlay Models",
-	"homeURL": "https://github.com/FalconChristmas/fpp-arcade",
-	"srcURL": "https://github.com/FalconChristmas/fpp-arcade.git",
-	"bugURL": "https://github.com/FalconChristmas/fpp-arcade/issues",
-	"versions": [
-        {
-            "minFPPVersion": "4.0",
-            "maxFPPVersion": "5.99",
-            "branch": "master",
-            "sha": "96d26b1975fcb06d872ef27a58bdb11256b16487"
-        },
-        {
-            "minFPPVersion": "6.0",
-            "maxFPPVersion": "6.99",
-            "branch": "master",
-            "sha": "d59758dff3db560041fe8fccc0166f3548489b84",
-            "allowUpdates": 0
-        },
-        {
-            "minFPPVersion": "7.0",
-            "maxFPPVersion": "7.99",
-            "branch": "master",
-            "sha": "",
-            "allowUpdates": 1
-        },
-	{
-            "minFPPVersion": "8.0",
-            "maxFPPVersion": "0",
-            "branch": "master",
-            "sha": "",
-            "allowUpdates": 1
-        }	
-	]
+  "repoName": "fpp-arcade",
+  "name": "FPP Arcade",
+  "author": "Daniel Kulp",
+  "description": "Various Games to Play on FPP Pixel Overlay Models",
+  "homeURL": "https://github.com/jthop/fpp-arcade",
+  "srcURL": "https://github.com/jthop/fpp-arcade.git",
+  "bugURL": "https://github.com/jthop/fpp-arcade/issues",
+  "versions": [
+    {
+      "minFPPVersion": "4.0",
+      "maxFPPVersion": "5.99",
+      "branch": "master",
+      "sha": "96d26b1975fcb06d872ef27a58bdb11256b16487"
+    },
+    {
+      "minFPPVersion": "6.0",
+      "maxFPPVersion": "6.99",
+      "branch": "master",
+      "sha": "d59758dff3db560041fe8fccc0166f3548489b84",
+      "allowUpdates": 0
+    },
+    {
+      "minFPPVersion": "7.0",
+      "maxFPPVersion": "7.99",
+      "branch": "master",
+      "sha": "",
+      "allowUpdates": 1
+    },
+    {
+      "minFPPVersion": "8.0",
+      "maxFPPVersion": "0",
+      "branch": "master",
+      "sha": "",
+      "allowUpdates": 1
+    }
+  ]
 }
-
