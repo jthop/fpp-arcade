@@ -7,7 +7,13 @@
 #include "overlays/PixelOverlay.h"
 #include "overlays/PixelOverlayModel.h"
 #include "overlays/PixelOverlayEffects.h"
+#include <curl/curl.h>
+#include <iostream>
 
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp){
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
 
 FPPBreakout::FPPBreakout(Json::Value &config) : FPPArcadeGame(config) {
     std::srand(time(NULL));
@@ -204,6 +210,22 @@ public:
             outputString("GAME", (model->getWidth()-(8 * scl))/ 2 / scl, (model->getHeight()/2-(6 * scl)) / scl, 255, 255, 255, scl);
             outputString("OVER", (model->getWidth()-(8 * scl))/ 2 / scl, model->getHeight()/2 / scl, 255, 255, 255, scl);
             model->flushOverlayBuffer();
+
+            // send curl notifying us game is over
+            CURL * curl;
+            CURLcode res;
+            std::string readBuffer;
+
+            curl = curl_easy_init();
+            if(curl) {
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/breakout/loose/callback");
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+                res = curl_easy_perform(curl);
+                curl_easy_cleanup(curl);
+                std::cout << readBuffer << std::endl;
+            }
+
             return 2000;
         }
         if (blocks.empty()) {
@@ -212,6 +234,23 @@ public:
             outputString("YOU", (model->getWidth()-(6 * scl))/ 2 / scl, (model->getHeight()/2-(6 * scl)) / scl, 255, 255, 255, scl);
             outputString("WIN", (model->getWidth()-(6 * scl))/ 2 / scl, model->getHeight()/2 / scl, 255, 255, 255, scl);
             model->flushOverlayBuffer();
+
+                        // send curl notifying us game is over
+            CURL * curl;
+            CURLcode res;
+            std::string readBuffer;
+
+            curl = curl_easy_init();
+            if(curl) {
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/breakout/win/callback");
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+                res = curl_easy_perform(curl);
+                curl_easy_cleanup(curl);
+
+                std::cout << readBuffer << std::endl;
+            }
+
             return 2000;
         }
         
