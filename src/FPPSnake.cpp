@@ -3,10 +3,17 @@
 #include "FPPSnake.h"
 #include <array>
 #include <random>
+#include <curl/curl.h>
+#include <iostream>
 
 #include "overlays/PixelOverlay.h"
 #include "overlays/PixelOverlayModel.h"
 #include "overlays/PixelOverlayEffects.h"
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp){
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
 
 
 FPPSnake::FPPSnake(Json::Value &config) : FPPArcadeGame(config) {
@@ -158,6 +165,24 @@ public:
             sprintf(buf, "%d", (uint32_t)snake.size());
             outputString(buf, (cols)/ 2 - 4, rows/2+3);
             model->flushOverlayBuffer();
+
+            // send curl notifying us game is over
+            CURL * curl;
+            CURLcode res;
+            std::string readBuffer;
+
+            curl = curl_easy_init();
+            if(curl) {
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/snake/callback");
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+                res = curl_easy_perform(curl);
+                curl_easy_cleanup(curl);
+
+                std::cout << readBuffer << std::endl;
+            }
+
+
             return 2000;
         }
         model->flushOverlayBuffer();
