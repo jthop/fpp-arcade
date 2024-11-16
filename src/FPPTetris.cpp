@@ -301,7 +301,8 @@ public:
 
                 curl = curl_easy_init();
                 if(curl) {
-                    char url[70] = "https://api.megatr.ee/api/games/cb?g=tetris&s=";
+                    //char url[70] = "https://api.megatr.ee/api/games/cb?g=tetris&s=";
+                    char url[70] = "http://10.10.2.5/api/games/cb?g=tetris&s=";
                     strcat(url, buf);
                     curl_easy_setopt(curl, CURLOPT_URL, url);
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
