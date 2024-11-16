@@ -173,8 +173,8 @@ public:
 
             curl = curl_easy_init();
             if(curl) {
-                //char url[71] = "https://api.megatr.ee/api/games/cb?g=snake&s=";
-                char url[71] = "http://10.10.2.5:8000/api/games/cb?g=snake&s=";
+                //char url[100] = "https://api.megatr.ee/api/games/cb?game=snake&score=";
+                char url[100] = "http://10.10.2.5:8000/api/games/cb?game=snake&score=";
                 strcat(url, buf);
                 curl_easy_setopt(curl, CURLOPT_URL, url);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);

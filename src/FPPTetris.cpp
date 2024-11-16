@@ -291,18 +291,14 @@ public:
 
                 model->flushOverlayBuffer();
 
-                // send curl notifying us game is over
-                // char url[50] = "https://api.megatr.ee/api/games/tetris/score/"
-                // strcat(url, buf);
-                // curl_easy_setopt(curl, CURLOPT_URL, url);
                 CURL * curl;
                 CURLcode res;
                 std::string readBuffer;
 
                 curl = curl_easy_init();
                 if(curl) {
-                    //char url[70] = "https://api.megatr.ee/api/games/cb?g=tetris&s=";
-                    char url[70] = "http://10.10.2.5:8000/api/games/cb?g=tetris&s=";
+                    //char url[100] = "https://api.megatr.ee/api/games/cb?game=tetris&score=";
+                    char url[100] = "http://10.10.2.5:8000/api/games/cb?game=tetris&score=";
                     strcat(url, buf);
                     curl_easy_setopt(curl, CURLOPT_URL, url);
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);

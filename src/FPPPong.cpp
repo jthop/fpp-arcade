@@ -94,15 +94,15 @@ public:
             outputString("OVER", (cols-8)/ 2, rows/2);
             model->flushOverlayBuffer();
 
-                        // send curl notifying us game is over
+            // send curl notifying us game is over
             CURL * curl;
             CURLcode res;
             std::string readBuffer;
 
             curl = curl_easy_init();
             if(curl) {
-                //curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/cb?g=pong");
-                curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.5:8000/api/games/cb?g=pong");
+                //curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/cb?game=pong");
+                curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.5:8000/api/games/cb?game=pong");
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
                 res = curl_easy_perform(curl);
