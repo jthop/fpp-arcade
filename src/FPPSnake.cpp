@@ -174,7 +174,8 @@ public:
             curl = curl_easy_init();
             if(curl) {
                 char url[100];
-                sprintf(url, "http://10.10.2.5:8000/api/games/cb?game=tetris&score=%d", (uint32_t)snake.size());
+                //sprintf(url, "http://10.10.2.5:8000/api/games/callback?game=tetris&score=%d", (uint32_t)snake.size());
+                sprintf(url, "https://api.megatr.ee/api/games/callback?game=tetris&score=%d", (uint32_t)snake.size());
                 curl_easy_setopt(curl, CURLOPT_URL, url);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);

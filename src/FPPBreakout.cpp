@@ -218,8 +218,8 @@ public:
 
             curl = curl_easy_init();
             if(curl) {
-                //curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/cb?game=breakout&win=False");
-                curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.5:8000/api/games/cb?game=breakout&win=False");
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/callback?game=breakout&win=False");
+                //curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.5:8000/api/games/callback?game=breakout&win=False");
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
                 res = curl_easy_perform(curl);
@@ -243,8 +243,8 @@ public:
 
             curl = curl_easy_init();
             if(curl) {
-                //curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/cb?game=breakout&win=True");
-                curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.50:8000/api/games/cb?game=breakout&win=True");
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/callback?game=breakout&win=True");
+                //curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.50:8000/api/games/callback?game=breakout&win=True");
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
                 res = curl_easy_perform(curl);
