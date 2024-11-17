@@ -101,8 +101,8 @@ public:
 
             curl = curl_easy_init();
             if(curl) {
-                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/callback?game=pong");
-                //curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.5:8000/api/games/callback?game=pong");
+                curl_easy_setopt(curl, CURLOPT_URL, "https://api.megatr.ee/api/games/pong/callback");
+                //curl_easy_setopt(curl, CURLOPT_URL, "http://10.10.2.5:8000/api/games/pong/callback");
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
                 res = curl_easy_perform(curl);
